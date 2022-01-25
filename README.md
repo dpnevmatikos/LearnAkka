@@ -43,5 +43,14 @@ In our small program so far two actors exist:
 
 `ConsoleReaderActor` has a reference on `ConsoleWriterActor` for `Tell`ing him when
 input's been given.
-Interesting things: `IActorRef` which as a reference (or a handle) to an actor and which is
+_Interesting_: `IActorRef` which as a reference (or a handle) to an actor and which is
 **serializable and can be passed over network**.
+
+### Using types as messages
+
+Followed this [guide](https://github.com/petabridge/akka-bootcamp/blob/master/src/Unit-1/lesson2/README.md).
+
+Actors can handle different types of messages by checking their types and perform respective
+actions. 
+
+_Interesting_: `Actor`s have a `Sender` property with the sender of a message.

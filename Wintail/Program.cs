@@ -1,6 +1,4 @@
-﻿using System;
-
-﻿using Akka.Actor;
+﻿﻿using Akka.Actor;
 
 namespace WinTail
 {
@@ -12,8 +10,6 @@ namespace WinTail
         /// <param name="args"></param>
         static void Main(string[] args)
         {
-            PrintInstructions();
-
             var MyActorSystem = ActorSystem.Create("MyActorSystem");
 
             var consoleWriterActor = MyActorSystem.ActorOf(
@@ -22,23 +18,9 @@ namespace WinTail
             var consoleReaderActor = MyActorSystem.ActorOf(
                 Props.Create(() => new ConsoleReaderActor(consoleWriterActor)));
 
-            MyActorSystem.WhenTerminated.Wait();
-        }
+            consoleReaderActor.Tell(ConsoleReaderActor.StartCommand);
 
-        private static void PrintInstructions()
-        {
-            Console.WriteLine("Write whatever you want into the console!");
-            Console.Write("Some lines will appear as");
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.Write(" red ");
-            Console.ResetColor();
-            Console.Write(" and others will appear as");
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write(" green! ");
-            Console.ResetColor();
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine("Type 'exit' to quit this application at any time.\n");
+            MyActorSystem.WhenTerminated.Wait();
         }
     }
 }
