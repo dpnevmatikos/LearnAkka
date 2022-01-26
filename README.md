@@ -9,7 +9,7 @@ Followed this [guide](https://github.com/petabridge/akka-bootcamp/blob/master/sr
 
 First steps in building a simple message sending application. 
 
-Actors can be though of as people, members of a community. They can perform actions and
+Actors can be thought of as people, members of a community. They can perform actions and
 are open to communication via messages. Actors can do anything and be anything. 
 The conceptual construct here seems similar to Object Oriented Programming, where
 real world is split into objects, categorized into classes (entities), interacting
@@ -95,6 +95,5 @@ var props = Props.Create(typeof(MyActor));
 var props = Props.Create(() => new MyActor(), "name");
 
 // generic syntax
-var props3 = Props.Create<MyActor>();
+var props = Props.Create<MyActor>();
 ```
-
