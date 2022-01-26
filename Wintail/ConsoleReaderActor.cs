@@ -13,7 +13,7 @@ namespace WinTail
         public const string ExitCommand = "exit";
         public const string StartCommand = "start";
 
-        private IActorRef _validationActor;
+        private IActorRef _fileValidatorActor;
 
         /// <summary>
         /// 
@@ -21,7 +21,7 @@ namespace WinTail
         /// <param name="consoleWriterActor"></param>
         public ConsoleReaderActor(IActorRef validationActor)
         {
-            _validationActor = validationActor;
+            _fileValidatorActor = validationActor;
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace WinTail
                 return;
             }
 
-            _validationActor.Tell(message);
+            _fileValidatorActor.Tell(message);
         }
 
         /// <summary>
@@ -60,9 +60,7 @@ namespace WinTail
         /// </summary>
         private void PrintInstructions()
         {
-            Console.WriteLine("Write whatever you want into the console!");
-            Console.WriteLine("Some entries will pass validation, and some won't...\n\n");
-            Console.WriteLine("Type 'exit' to quit this application at any time.\n");
+            Console.WriteLine("Please provide the URI of a log file on disk.\n");
         }
     }
 }

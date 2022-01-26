@@ -97,3 +97,64 @@ var props = Props.Create(() => new MyActor(), "name");
 // generic syntax
 var props = Props.Create<MyActor>();
 ```
+
+### Supervision & Hierarchies
+
+Followed this [guide](https://github.com/petabridge/akka-bootcamp/blob/master/src/Unit-1/lesson4/README.md). 
+
+Actors are organized in **[actor hierarchies](https://github.com/petabridge/akka-bootcamp/blob/master/src/Unit-1/lesson4/README.md#actor-hierarchies)**. There are two reasons for this design: 
+1. Atomize work, by splitting large work into smaller chunks
+2. Resilience. Errors are contained. 
+
+High-level actors are **supervisors** and can push risky operations to children actors. If a child fails then
+the parent can chose how to handle the error. A child's failure will also prevent the system from crashing.
+
+There are three main top level actors: 
+1. the `/` actor: the base actor of the entire system (a.k.a _root guardian_). This actor supervises the two
+other actors, `/system` and `/user`. It is the only actor **without a parent**.
+2. the `/system` actor (a.k.a _systemic guardian_): implements framework level features and ensures that
+the system shuts down in an orderly manner. It's a child of `/` actor.
+3. the `/user` actor (a.k.a _guardian actor_): this is root of our custom built actor system. All the actors
+we create are children of this actor. It's a child of `/` actor. 
+
+Parent actors can only supervise their children (the level below them) only. Exceptions and any failure that might
+occur within a child is sent to the parent as a message of type `Failure` which can be handled in a number
+of ways, called _supervision directives_: 
+1. **Restart** the child (default behaviour).
+2. **Stop** the child which terminates the child actor completely.
+3. **Escalate the error** to their parent actor
+4. **Resume** processing, and ignore the error
+
+Parents have two (built in) **supervision strategies**: 
+1. One-For-One (default): the directive issued by the parent affects only the failing child.
+2. All-For-One-Strategy: the directive issued by the parent affects all children.
+
+Custom strategies can also be implemented per case: 
+```csharp
+protected override SupervisorStrategy SupervisorStrategy()
+{
+    return new OneForOneStrategy(
+        maxNrOfRetries: 10,
+        withinTimeRange: TimeSpan.FromSeconds(30),
+        localOnlyDecider: ex =>
+        {
+            // ignore the error
+            if (ex is ArithmeticException) {
+                return Directive.Resume;
+            }
+
+            // escalate to the Parent's parent
+            if (ex is InsanelyBadException) {
+                return Directive.Escalate;
+            }
+
+            // stop the child
+            if (ex is NotSupportedException) {
+                return Directive.Stop;
+            }
+
+            // restart the child
+            return Directive.Restart;
+        });
+}
+```
